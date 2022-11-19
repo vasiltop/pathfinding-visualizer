@@ -2,6 +2,8 @@ import pygame
 from nodes import Node, Wall, searchNode
 from text import message_display
 from settings import *
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 #Initialization
 pygame.init()
@@ -20,11 +22,11 @@ for i in range(len(nodes)):
 	updated.append([])
 	for j in range(len(nodes[i])):
 		if(nodes[i][j] == "p"):
-			updated[i].append(Node(0,0,0, False, False, False, j, i))
+			updated[i].append(Node(0,0,0, False, False, False, j, i, colors["altblue"], None))
 		elif(nodes[i][j] == "s"):
-			updated[i].append(Node(0,0,0, True, False, False, j, i))
+			updated[i].append(Node(0,0,0, True, False, True, j, i, colors["orange"], None))
 		elif(nodes[i][j] == "e"):
-			updated[i].append(Node(0,0,0, False, True, False, j, i))
+			updated[i].append(Node(0,0,0, False, True, False, j, i, colors["green"], None))
 		elif(nodes[i][j] == "#"):
 			updated[i].append(Wall())
 
@@ -39,7 +41,8 @@ for i in range(len(updated)):
 				startNode = n
 				x = startNode.x
 				y = startNode.y
-
+searching = True
+index = endNode
 #Running Loop
 while running:
 	for event in pygame.event.get():
@@ -47,81 +50,115 @@ while running:
 			running = False
 
 	#Drawing Nodes
-	gameDisplay.fill((0,0,0))
+	gameDisplay.fill(colors["pink"])
 	for i in range(len(updated)):
 		for j in range(len(updated[i])):
 			n = updated[i][j]
 			if(type(n) == Node):
 				if(not n.ending and not n.starting):
-					c = colors["blue"]
-
-					if(n.searched): c = colors["altblue"]
-					pygame.draw.rect(gameDisplay, c,(j * boxL,i * boxL,boxL,boxL))
+					pygame.draw.rect(gameDisplay, n.color,(j * boxL,i * boxL,boxL,boxL))
 					message_display(gameDisplay,f'{round(n.hcost, 1)} , {round(n.gcost, 1)}', ((j * boxL + boxL/2),(i * boxL + boxL/2 - 8)))
 					message_display(gameDisplay,f'{n.x}, {n.y}', ((j * boxL + boxL/2),(i * boxL + boxL/2 + 8)))
 				elif(n.ending and not n.starting):
-					
-					
-					pygame.draw.rect(gameDisplay, colors["green"],(j * boxL,i * boxL,boxL,boxL))
+					pygame.draw.rect(gameDisplay, n.color,(j * boxL,i * boxL,boxL,boxL))
 				elif(not n.ending and n.starting):
-					
-					pygame.draw.rect(gameDisplay, colors["white"],(j * boxL,i * boxL,boxL,boxL))
-			else:
-				pygame.draw.rect(gameDisplay, colors["pink"], (j * boxL,i * boxL,boxL,boxL))
-	
+					pygame.draw.rect(gameDisplay, n.color,(j * boxL,i * boxL,boxL,boxL))
 	
 
 	#Logic
-	neighbors = []
-	n = updated[y][x]
+	searchedNodes = []
+	nodesToChooseFrom = []
 
-	#Check if we are at the end node
-	if(n.ending): 
-		running = False
-		print("Completed")
-
-	#Update the list of neighboring nodes
-	if(y - 1 >= 0):
-		#Check the node above
-		if(searchNode(updated, y - 1, x, startNode, endNode, neighbors) != None):
-			updated, neighbors = searchNode(updated, y - 1, x, startNode, endNode, neighbors)
-	if(x - 1 >= 0):
-		#Check the node to the left
-		if(searchNode(updated, y, x-1, startNode, endNode, neighbors) != None):
-			updated, neighbors = searchNode(updated, y, x-1, startNode, endNode, neighbors)
-	if(x + 1 <= len(updated[y]) - 1):
-		#Check the node to the right
-		if(searchNode(updated, y, x+1, startNode, endNode, neighbors) != None):
-			updated, neighbors = searchNode(updated, y, x+1, startNode, endNode, neighbors)
-	if(y + 1 <= len(updated) - 1):
-		#Check the node below
-		if(searchNode(updated, y+1, x, startNode, endNode, neighbors) != None):
-			updated, neighbors = searchNode(updated, y+1, x, startNode, endNode, neighbors)
+	for i in range(len(updated)):
+		for j in range(len(updated[i])):
+			if(type(updated[i][j]) == Node):
+				if(updated[i][j].searched == True):
+					searchedNodes.append(updated[i][j])
 	
-	#Find the most optimal node to move to
-	if(len(neighbors) != 0):
-		bestChoice = neighbors[0]
-		fcosts = [i.fcost for i in neighbors]
-		if(fcosts.count(fcosts[0]) == len(fcosts) and len(neighbors) >= 2):
+	for i in searchedNodes:
+		
 
-			for i in neighbors:
-				if(i.hcost < bestChoice.hcost):
-					bestChoice = i
-		else:
-			for i in neighbors:
-				if(i.fcost < bestChoice.fcost):
-					bestChoice = i
-		x = bestChoice.x
-		y = bestChoice.y
+		if(searching):
+			if(i.y > 0):
+				
+				rs = searchNode(updated, i.y - 1, i.x, startNode, endNode, i)
+
+				if(rs != -1):
+					updated[i.y-1][i.x].parent = i
+					updated[i.y-1][i.x].hcost = rs[0]
+					updated[i.y-1][i.x].gcost = rs[1]
+					updated[i.y-1][i.x].fcost = rs[2]
+					updated[i.y-1][i.x].parent = i
+					nodesToChooseFrom.append(updated[i.y-1][i.x])
+
+			if(i.y < (l - 1)):
+				
+				rs = searchNode(updated, i.y + 1, i.x, startNode, endNode, i)
+				print(i.x, i.y+1)
+				if(rs != -1):
+					updated[i.y+1][i.x].parent = i
+					updated[i.y+1][i.x].hcost = rs[0]
+					updated[i.y+1][i.x].gcost = rs[1]
+					updated[i.y+1][i.x].fcost = rs[2]
+					updated[i.y+1][i.x].parent = i
+					nodesToChooseFrom.append(updated[i.y+1][i.x])
+			if(i.x > 0):
+				
+				rs = searchNode(updated, i.y, i.x - 1, startNode, endNode, i)
+				if(rs != -1):
+					updated[i.y][i.x - 1].parent = i
+					updated[i.y][i.x - 1].hcost = rs[0]
+					updated[i.y][i.x - 1].gcost = rs[1]
+					updated[i.y][i.x - 1].fcost = rs[2]
+					updated[i.y][i.x - 1].parent = i
+					nodesToChooseFrom.append(updated[i.y][i.x - 1])
+			if(i.x < (w - 1)):
+				
+				rs = searchNode(updated, i.y, i.x + 1, startNode, endNode, i)
+				if(rs != -1):
+					updated[i.y][i.x + 1].hcost = rs[0]
+					updated[i.y][i.x + 1].gcost = rs[1]
+					updated[i.y][i.x + 1].fcost = rs[2]
+					updated[i.y][i.x + 1].parent = i
+					nodesToChooseFrom.append(updated[i.y][i.x + 1])
+			
+
+			if(endNode not in nodesToChooseFrom): 
+
+				if(len(nodesToChooseFrom) > 0):
+					low = nodesToChooseFrom[0]
+					mn = nodesToChooseFrom[0].fcost
+
+					for i in nodesToChooseFrom:
+
+						
+						if(i.fcost < mn):
+							mn = i.fcost
+							low = i
+
+					low.searched = True
+					
+					low.color = colors['blue']
+
+					for i in nodesToChooseFrom:
+						updated[low.y][low.x] = low
+			else:
+				searching = False
 
 
-	#Update display and time
+	if(not searching):
+		
+		p = index.parent
+		
+		if(p != None ):
+			if(index != endNode):
+				index.color = colors["white"]
+			index = p
+
+	#Update display, time and background
+	
 	pygame.display.update()
 	clock.tick(speed)
 
-
-		
-				
-	
 pygame.quit()
 quit()

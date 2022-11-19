@@ -1,6 +1,8 @@
 import math
+from settings import colors
+
 class Node:
-	def __init__(self, hcost, gcost, fcost, starting, ending, searched, x, y):
+	def __init__(self, hcost, gcost, fcost, starting, ending, searched, x, y, color, parent):
 		self.hcost = hcost #Close to ending point
 		self.gcost = gcost #Close to starting point
 		self.fcost = fcost #H and G added
@@ -9,22 +11,22 @@ class Node:
 		self.searched = searched
 		self.x = x
 		self.y = y
+		self.color = color
+		self.parent = parent
 
 class Wall:
 	def __init__(self):
 		pass
 
-def searchNode(l, y, x, startNode, endNode, neighbors):
-	ol = l
-	on = neighbors
-	if(type(l[y][x]) != Wall and not l[y][x].searched and not l[y][x].starting):
+def searchNode(l, y, x, startNode, endNode, parent):
+	
+	if(type(l[y][x]) != Wall):
 		
-		l[y][x].hcost = round(math.dist([x, y], [endNode.x, endNode.y]))
-		l[y][x].gcost = round(math.dist([x, y], [startNode.x, startNode.y]))
-		l[y][x].fcost = l[y][x].hcost + l[y][x].gcost
-		l[y][x].searched = True
-		
-		neighbors.append(l[y][x])
-
-		return (l, neighbors)
-	return (ol, on)
+		if(not l[y][x].searched and not l[y][x].starting):
+			
+			hcost = round(math.dist([x, y], [endNode.x, endNode.y]))
+			gcost = parent.gcost + 1
+			fcost = hcost + gcost
+			return (hcost, gcost, fcost)
+	return -1
+	
