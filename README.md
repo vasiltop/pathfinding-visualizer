@@ -10,4 +10,4 @@ Grid Notation:
 <li> e : End Node </li> 
 </ul>
 
-To change the speed of the pathfinding, change the speed variable in settings.py.
+Settings such as the width of the nodes and speed of the pathfinding can be tweaked in settings.py.
