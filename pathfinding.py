@@ -40,7 +40,7 @@ for i in range(len(updated)):
 				x = startNode.x
 				y = startNode.y
 
-#Game Loop
+#Running Loop
 while running:
 	for event in pygame.event.get():
 		if(event.type == pygame.QUIT):
@@ -96,7 +96,6 @@ while running:
 	if(y + 1 <= len(updated) - 1):
 		#Check the node below
 		if(searchNode(updated, y+1, x, startNode, endNode, neighbors) != None):
-			print(searchNode(updated, y+1, x, startNode, endNode, neighbors))
 			updated, neighbors = searchNode(updated, y+1, x, startNode, endNode, neighbors)
 	
 	#Find the most optimal node to move to
