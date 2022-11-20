@@ -2,8 +2,6 @@ import pygame
 from nodes import Node, Wall, searchNode
 from text import message_display
 from settings import *
-import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 #Initialization
 pygame.init()
@@ -43,6 +41,7 @@ for i in range(len(updated)):
 				y = startNode.y
 searching = True
 index = endNode
+moves = 0
 #Running Loop
 while running:
 	for event in pygame.event.get():
@@ -78,7 +77,7 @@ while running:
 	for i in searchedNodes:
 		
 
-		if(searching):
+		if(searching == True):
 			if(i.y > 0):
 				
 				rs = searchNode(updated, i.y - 1, i.x, startNode, endNode, i)
@@ -94,7 +93,7 @@ while running:
 			if(i.y < (l - 1)):
 				
 				rs = searchNode(updated, i.y + 1, i.x, startNode, endNode, i)
-				print(i.x, i.y+1)
+				
 				if(rs != -1):
 					updated[i.y+1][i.x].parent = i
 					updated[i.y+1][i.x].hcost = rs[0]
@@ -146,14 +145,19 @@ while running:
 				searching = False
 
 
-	if(not searching):
+
+	if(searching == False):
 		
 		p = index.parent
 		
-		if(p != None ):
+		if(p != None):
+			moves += 1
 			if(index != endNode):
 				index.color = colors["white"]
 			index = p
+		else:
+			print(f"Pathfinding completed in {moves} moves.")
+			searching = "Completed"
 
 	#Update display, time and background
 	

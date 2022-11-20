@@ -3,9 +3,9 @@ from settings import colors
 
 class Node:
 	def __init__(self, hcost, gcost, fcost, starting, ending, searched, x, y, color, parent):
-		self.hcost = hcost #Close to ending point
-		self.gcost = gcost #Close to starting point
-		self.fcost = fcost #H and G added
+		self.hcost = hcost
+		self.gcost = gcost
+		self.fcost = fcost
 		self.starting = starting
 		self.ending = ending
 		self.searched = searched
