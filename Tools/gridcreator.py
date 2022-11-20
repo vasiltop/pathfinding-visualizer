@@ -1,5 +1,4 @@
 import pygame
-import os
 
 h, w = input("Enter grid width and height with a space in between: ").split()
 h = int(h)
@@ -94,8 +93,6 @@ wfile.write("speed = 8" + "\n")
 wfile.write("colors = " + str(colors) + "\n")
 
 wfile.close()
-#cwd = os.getcwd()
-#os.rename(cwd + "\\config.txt", cwd+"\\config.py")
 
 pygame.quit()
 quit()
