@@ -24,13 +24,6 @@ symbol = {
 
 grid = [["#" for i in range(h)] for j in range(w)]
 
-'''
-for i in range(len(grid)):
-	for j in range(len(grid[i])):
-		print(grid[i][j], end = "")
-	print()
-'''
-
 boxL = int(input("Enter the height/width of each cell: "))
 pygame.init()
 gameDisplay = pygame.display.set_mode((h * boxL, w * boxL))
@@ -46,7 +39,6 @@ while running:
 			running = False
 		if(event.type == pygame.MOUSEBUTTONDOWN):
 
-			
 			if(event.button == 1):
 				grid[y // boxL][x // boxL] = "p"
 			elif (event.button == 3):
