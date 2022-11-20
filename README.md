@@ -2,7 +2,7 @@
 
 This pathfinder uses the grid provided in settings.py and finds a path to the ending node.
 
-Grid Notation:
+<h3> Grid Notation: </h3>
 <ul>
 <li># : Wall Node</li>
 <li> p : Path Node </li>
@@ -11,3 +11,6 @@ Grid Notation:
 </ul>
 
 Settings such as the width of the nodes and speed of the pathfinding can be tweaked in settings.py.
+
+<h3> Custom Grids </h3>
+Custom grids can be created using gridcreator.py in the Tools folder.
